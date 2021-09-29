@@ -91,7 +91,8 @@ mean_T_day$HDD<- -mean_T_day$HDD
 ### 4. Agregación mensual
 ##################
 ### 4.1 Calcular calendario
-### 4.2 Agregar
+### 4.2 Agregar HDD
+### 4.3 Agregar cargas
 ##################
 
 ### 4.1 Calcular calendario
@@ -125,7 +126,8 @@ for (i in 1:max(calendar_table$month))
   }
 }
 
-### 4.2 Agregar
+### 4.2 Agregar HDD
+### 4.3 Agregar cargas
 ### 4.2.1 Añadir el mes correspondiente a cada día al DF
 mean_T_day$Month<-rep(0,dim(mean_T_day)[1])
 for (i in 1:dim(mean_T_day)[1])
@@ -139,16 +141,88 @@ for (i in 1:dim(mean_T_day)[1])
 HDD_month <- aggregate(mean_T_day$HDD, list(mean_T_day$Month), sum)
 names(HDD_month)<- c("Month","HDD")
 
+### 4.3 Agregar cargas
+Load_month <- aggregate(dataset$Power.kW., list(dataset$Month), sum)
+names(Load_month)<- c("Month","Load.kWh")
+
+### 4.4 Tabla sumario
+Summary_month <- cbind(HDD_month,Load_month$Load.kWh)
+names(Summary_month)[3]<- "Load.kWh"
+
 ##################
 ### 5. Graficar
 ##################
+par(mfrow=c(3,1)) 
+plot (Summary_month[,1:2]   , type="l")
+plot (Summary_month[,c(1,3)], type="l")
+plot (Summary_month[,2:3])
+par(mfrow=c(1,1)) 
+
+# Verificar que se está graficando toda la escala
+lim_HDD <- c(0, max(Summary_month$HDD))
+lim_Load <- c(0, max(Summary_month$Load.kWh))
+
+par(mfrow=c(3,1)) 
+plot (Summary_month[,1:2]   , type="l", ylim=lim_HDD)
+plot (Summary_month[,c(1,3)], type="l", ylim=lim_Load)
+plot (Summary_month[,2:3], xlim=lim_HDD, ylim=lim_Load)
+par(mfrow=c(1,1)) 
+
 
 ##################
 ### 6. Regresión
 ##################
 
+RL_I <- lm(Summary_month$Load.kWh ~ Summary_month$HDD)
+
+par(mfrow=c(2,1))
+plot(Summary_month$Load.kWh, RL_I[["fitted.values"]], xlim=lim_Load, ylim=lim_Load)
+abline(a=0, b=1)
+
+plot (Summary_month[,c(1,3)], type="l", ylim=lim_Load)
+points(Summary_month$Month, RL_I[["fitted.values"]], type="l", col="red")
+points(Summary_month$Month, RL_I[["residuals"]], type="l", col="blue")
+par(mfrow=c(1,1))
+
+# Pasando por 0
+RL_nI <- lm(Summary_month$Load.kWh ~ Summary_month$HDD+0)
+
+par(mfrow=c(2,1))
+plot(Summary_month$Load.kWh, RL_nI[["fitted.values"]], xlim=lim_Load, ylim=lim_Load)
+abline(a=0, b=1)
+
+plot (Summary_month[,c(1,3)], type="l", ylim=lim_Load)
+points(Summary_month$Month, RL_nI[["fitted.values"]], type="l", col="red")
+points(Summary_month$Month, RL_nI[["residuals"]], type="l", col="blue")
+par(mfrow=c(1,1))
+
+
+
+
 ##################
 ### 7. Proyección
 ##################
+# Nuevo archivo de HDD tomado de degredays.net
+# Aeropuerto de Tartu
+# Formato modificado para compatibiliar con Script
+# (original en la misma ruta)
+
+# Archivo de datos
+file<-"/2_Data/EETU_HDD_15C_mod_RG.csv"
+
+# Ruta completa
+ruta<-paste(wd,file, sep="")
+
+# Lectura de un archivo csv
+HDD_month_2020 <- read.csv(ruta, sep=";")
+# View(dataset)
+
+
+
+
+
+Load_month_2020<-as.data.frame(predict(RL_I, HDD_month))
+Summary_month_2020 <- cbind(HDD_month_2020,Load_month_2020)
+names(Summary_month_2020)[3]<- "Load.kWh"
 
 ##################
