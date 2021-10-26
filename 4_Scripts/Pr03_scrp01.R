@@ -65,7 +65,7 @@ dataset <- read.csv(ruta, sep=";")
 ### Referencia
 ##################
 
-#ççç Explicar aggregate
+### aggregate
 
 ##################
 ### 3. Cálculo de GD
