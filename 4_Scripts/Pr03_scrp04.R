@@ -194,7 +194,7 @@ opt_intercept <-as.numeric(quantile(optimo$intercept,0.5))
 
 
 # Graficar
-# Graficar Q-t
+# Graficar Q-T
 plot(daily_summary$Mean_Temperature,daily_summary$Load)
 points(daily_summary$Mean_Temperature,
        Qbase(daily_summary$Mean_Temperature,
@@ -203,6 +203,7 @@ points(daily_summary$Mean_Temperature,
              opt_intercept),
        col="blue")
 
+# Graficar Q-t
 plot(daily_summary$Load)
 points(Qbase(daily_summary$Mean_Temperature,
              opt_slope,
@@ -210,7 +211,14 @@ points(Qbase(daily_summary$Mean_Temperature,
              opt_intercept),
        col="blue")
 
-
+# Graficar Q-Q
+plot(daily_summary$Load,
+     Qbase(daily_summary$Mean_Temperature,
+           opt_slope,
+           opt_horizontal,
+           opt_intercept),
+     col="blue")
+abline(0,1)
 
 
 
@@ -332,7 +340,7 @@ opt_multi_intercept   <-as.numeric(quantile(optimo$intercept   ,0.5))
 opt_multi_slope_I     <-as.numeric(quantile(optimo$slope_I     ,0.5))
 
 # Graficar
-# Graficar Q-t
+# Graficar Q-T
 plot(daily_summary$Mean_Temperature,daily_summary$Load)
 points(daily_summary$Mean_Temperature,
        Qbase(daily_summary$Mean_Temperature,
@@ -349,6 +357,7 @@ points(daily_summary$Mean_Temperature,
                    opt_multi_slope_I),
        col="red")
 
+# Graficar Q-t
 plot(daily_summary$Load)
 points(Qbase(daily_summary$Mean_Temperature,
              opt_slope,
@@ -362,3 +371,21 @@ points(Qbase_multi(daily_summary$Mean_Temperature,
                    opt_multi_intercept,
                    opt_multi_slope_I),
        col="red")
+
+
+# Graficar Q-Q
+plot(daily_summary$Load,
+     Qbase(daily_summary$Mean_Temperature,
+           opt_slope,
+           opt_horizontal,
+           opt_intercept),
+     col="blue")
+points(daily_summary$Load,
+       Qbase_multi(daily_summary$Mean_Temperature,
+                   daily_summary$Solar_Radiation,
+                   opt_multi_slope_T,
+                   opt_multihorizontal,
+                   opt_multi_intercept,
+                   opt_multi_slope_I),
+       col="red")
+abline(0,1)
