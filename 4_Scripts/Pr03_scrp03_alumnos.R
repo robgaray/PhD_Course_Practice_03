@@ -70,33 +70,34 @@ dataset <- read.csv(ruta, sep=";")
 ### sintaxis de funciones
 ### R2 & MAE
 ### quantile y percentiles
+### max vs pmax
 
 ##################
 ### 3. Agregados diarios
 ##################
-mean_T_day <- aggregate(dataset$Temperature, list(dataset$Day_Year), mean)
+mean_T_day <- aggregate(              ,             ,          )
 names(mean_T_day)<- c("Day_Year","Mean_Temperature")
 
-load_day <- aggregate(dataset$Power.kW., list(dataset$Day_Year), sum)
+load_day   <- aggregate(              ,             ,          )
 names(load_day)<- c("Day_Year","Load")
 
-daily_summary<-cbind(mean_T_day,load_day$Load)
+daily_summary<-cbind(         ,            )
 names(daily_summary)<- c("Day_Year","Mean_Temperature","Load")
 
 ##################
 ### 4. Definición de función changepoint
 ##################
 changepoint<- function(Temperature,slope, change_T, horizontal){
- load<-horizontal+ (Temperature<change_T)*slope*(change_T-Temperature)
+ load<-
 }
 
 ##################
 ### 5. Uso manual de la función
 ##################
-plot(changepoint(daily_summary$Mean_Temperature,10,15,3))
-points(changepoint(daily_summary$Mean_Temperature,5,15,3), col="red")
-points(changepoint(daily_summary$Mean_Temperature,10,10,3), col="blue")
-points(changepoint(daily_summary$Mean_Temperature,10,15,20), col="green")
+# Pltear gráfico Q-t con varios parámetros y ver cómo cambia
+
+
+
 
 ##################
 ### 6. Optimización
@@ -111,10 +112,16 @@ MAE <- function (observacion, modelo) (sum((observacion>modelo)*(observacion-mod
 # (~1' para ~10^4-5 combinaciones)
 
 # combinatoria de casos
-rango_slope<-seq(0,50,1)
-rango_change_T<-seq(5,20,0.25)
-rango_horizontal<-seq(0,100,10)
-combinatoria<-as.data.frame(expand.grid(rango_slope, rango_change_T, rango_horizontal))
+rango_slope        <-seq(0,
+                         50,
+                         1)
+rango_change_T     <-seq(5,
+                         20,
+                         0.25)
+rango_horizontal   <-seq(0,
+                         100,
+                         10)
+combinatoria       <-as.data.frame(expand.grid(rango_slope, rango_change_T, rango_horizontal))
 combinatoria<-cbind(combinatoria,
                     rep(0,dim(combinatoria)[1]),
                     rep(0,dim(combinatoria)[1]))
@@ -124,28 +131,26 @@ names(combinatoria)<-c("slope", "change_T", "horizontal","R2","MAE")
 observacion<-daily_summary$Load
 for (i in 1: dim(combinatoria)[1])
 {
-  modelo<-changepoint(daily_summary$Mean_Temperature,
-                   combinatoria$slope[i],
-                   combinatoria$change_T[i],
-                   combinatoria$horizontal[i])
+  modelo<-changepoint(daily_summary$Mean_Temperature,         ,         ,         )
   combinatoria$R2[i]<-r2(observacion,modelo)
   combinatoria$MAE[i]<-MAE(observacion,modelo)
 }
 
 # Eliminar combinaciones con R2 ==NA
-combinatoria<-combinatoria[!is.na(combinatoria$R2),]
+combinatoria<-combinatoria[                    ,]
 
 # Identificar combinatorias buenas
 # Percentil R2>0.75
-R2_75<-quantile(combinatoria$R2,0.75)
+R2_75<-quantile(        ,       )
 opt_R2<-combinatoria$R2>R2_75
+
 # Percentil MAE<.025
-MAE_25<-quantile(combinatoria$MAE,0.25)
+MAE_25<-quantile(        ,       )
 opt_MAE<-combinatoria$MAE<MAE_25
 
 # combinado
 opt_glob<-opt_R2*opt_MAE
-optimo<-combinatoria[opt_glob==1,]
+optimo<-combinatoria[             ,]
 summary(optimo)
 
 
@@ -184,11 +189,11 @@ combinatoria<-combinatoria[!is.na(combinatoria$R2),]
 
 # Identificar combinatorias buenas
 # Percentil R2>0.95
-R2_75<-quantile(combinatoria$R2,0.95)
+R2_75<-quantile(        ,       )
 opt_R2<-combinatoria$R2>R2_75
 
 # Percentil MAE<0.05
-MAE_25<-quantile(combinatoria$MAE,0.05)
+MAE_25<-quantile(        ,       )
 opt_MAE<-combinatoria$MAE<MAE_25
 
 # combinado
@@ -198,9 +203,9 @@ summary(optimo)
 
 #Coeficientes optimizados
 # Tomar el valor promedio
-opt_slope     <-as.numeric(quantile(optimo$slope     ,0.5))
-opt_change_T  <-as.numeric(quantile(optimo$change_T  ,0.5))
-opt_horizontal<-as.numeric(quantile(optimo$horizontal,0.5))
+opt_slope     <-as.numeric(quantile(     ,     ))
+opt_change_T  <-as.numeric(quantile(     ,     ))
+opt_horizontal<-as.numeric(quantile(     ,     ))
 
 
 # Graficar
@@ -224,8 +229,7 @@ points(daily_summary$Day_Year,
 ### 7. Formulación alternativa
 ##################
 Qbase<- function(Temperature, slope, horizontal,intercept){
-  load<-pmax(horizontal,
-             Temperature*slope+intercept)
+  load<-
 }
 
 # Graficar Q-t
