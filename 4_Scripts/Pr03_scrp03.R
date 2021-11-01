@@ -204,7 +204,7 @@ opt_horizontal<-as.numeric(quantile(optimo$horizontal,0.5))
 
 
 # Graficar
-plot(daily_summary$Mean_Temperature,daily_summary$Load)
+plot(daily_summary$Mean_Temperature,daily_summary$Load, xlab="Temperature [ºC]", ylab="Load [kWh]")
 points(daily_summary$Mean_Temperature,
        changepoint(daily_summary$Mean_Temperature,
                    opt_slope,
@@ -212,7 +212,7 @@ points(daily_summary$Mean_Temperature,
                    opt_horizontal),
        col="blue")
 
-plot(daily_summary$Day_Year,daily_summary$Load)
+plot(daily_summary$Day_Year,daily_summary$Load, xlab="time", ylab="Load [kWh]")
 points(daily_summary$Day_Year,
        changepoint(daily_summary$Mean_Temperature,
                    opt_slope,

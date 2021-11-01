@@ -194,8 +194,9 @@ opt_intercept <-as.numeric(quantile(optimo$intercept,0.5))
 
 
 # Graficar
+par(mfrow=c(3,1))
 # Graficar Q-T
-plot(daily_summary$Mean_Temperature,daily_summary$Load)
+plot(daily_summary$Mean_Temperature,daily_summary$Load, xlab="Temperature [ºC]", ylab="Load [kWh]")
 points(daily_summary$Mean_Temperature,
        Qbase(daily_summary$Mean_Temperature,
              opt_slope,
@@ -204,7 +205,7 @@ points(daily_summary$Mean_Temperature,
        col="blue")
 
 # Graficar Q-t
-plot(daily_summary$Load)
+plot(daily_summary$Load, xlab="time [Days]", ylab="Load [kWh]")
 points(Qbase(daily_summary$Mean_Temperature,
              opt_slope,
              opt_horizontal,
@@ -217,9 +218,9 @@ plot(daily_summary$Load,
            opt_slope,
            opt_horizontal,
            opt_intercept),
-     col="blue")
+     col="blue", , xlab="Load, data [kWh]", ylab="Load, modeled [kWh]")
 abline(0,1)
-
+par(mfrow=c(1,1))
 
 
 ##################
